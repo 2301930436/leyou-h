@@ -20,17 +20,6 @@ const lyTop = {
                                 </div> \
                             </form> \
                         </div> \
-                        <div class='hotwords'> \
-                            <ul> \
-                                <li class='f-item'>乐优首发</li> \
-                                <li class='f-item'>亿元优惠</li> \
-                                <li class='f-item'>9.9元团购</li> \
-                                <li class='f-item'>每满99减30</li> \
-                                <li class='f-item'>亿元优惠</li> \
-                                <li class='f-item'>9.9元团购</li> \
-                                <li class='f-item'>办公用品</li> \
-                            </ul> \
-                        </div> \
                     </div> \
                     <div class='yui3-u Right shopArea'> \
                         <div class='fr shopcar'> \

@@ -14,33 +14,31 @@
 </head>
 
 	<body>
-		
-		<!--页面顶部白条条，由js动态加载-->
-		<script type="text/javascript" src="plugins/jquery/jquery.min.js"></script>
-		<div class="top"></div>
-    	<script type="text/javascript">$(".top").load("shortcut.html");</script>
-		
-		<div class="cart py-container">
+
+		<div class="cart py-container" id="payApp">
+				<div class="top">
+					<shortcut />
+				</div>
 			<!--logoArea-->
 			<div class="logoArea">
 				<div class="fl logo"><span class="title">收银台</span></div>
 			</div>
 			<!--主内容-->
 			
-			<a href="payfail.html">支付失败演示页</a>
-			<a href="paysuccess.html">支付成功演示页</a>
+<!--			<a href="payfail.html">支付失败</a>-->
+			<a href="javascript:void(0)" @click="cli">支付成功(测试专用)</a>
 			
 			
 			<div class="checkout py-container  pay">
 				<div class="checkout-tit">
-					<h4 class="fl tit-txt"><span class="success-icon"></span><span  class="success-info">订单提交成功，请您及时付款！订单号：56789065645</span></h4>
-                    <span class="fr"><em class="sui-lead">应付金额：</em><em  class="orange money">￥17,654</em>元</span>
+					<h4 class="fl tit-txt"><span class="success-icon"></span><span  class="success-info">订单提交成功，请您及时付款！订单号：{{order.orderId}}</span></h4>
+                    <span class="fr"><em class="sui-lead">应付金额：</em><em  class="orange money">{{ly.formatPrice(order.actualPay*1)}}</em>元</span>
 					<div class="clearfix"></div>
 				</div>				
 				<div class="checkout-steps">
 					<div class="fl weixin">微信支付</div>
                     <div class="fl sao"> 
-                        <p class="red">二维码已过期，刷新页面重新获取二维码。</p>                      
+<!--                        <p class="red">二维码已过期，刷新页面重新获取二维码。</p>-->
                         <div class="fl code">
                             <img src="img/erweima.png" alt="">
                             <div class="saosao">
@@ -54,7 +52,7 @@
                         
                     </div>
                     <div class="clearfix"></div>
-				    <p><a href="pay.html" target="_blank">> 其他支付方式</a></p>
+<!--				    <p><a href="pay.html" target="_blank">> 其他支付方式</a></p>-->
 				</div>
 			</div>
 
@@ -79,6 +77,57 @@
 				})
 			})
 		</script>
+		<script src="./js/vue/vue.js"></script>
+		<script src="./js/axios.min.js"></script>
+		<script src="./js/common.js"></script>
+	<script>
+		var payVm = new Vue({
+			el:"#payApp",
+			data:{
+				ly,
+				order:{}
+			},
+			created() {
+				this.loadData();
+			},
+			methods: {
+				loadData() {
+					let localUrl = window.location.href;
+					// let urlParam = localUrl.split('?')[1];
+					// let params = new URLSearchParams('?'+urlParam);
+					// let orderId= params.get("orderId");
+					let orderId= localUrl.match(/22(\d+)/)[1];
+					ly.http.get("/order/"+orderId,{},
+							{
+								transformResponse:[
+									function (o){
+										return o;
+									}
+								]
+							}
+					).then(o=>{
+						this.order=o.data
+					}
+					)
+				},
+				cli(){
+					ly.http.put("/order/"+this.order.orderId+"/2").then(d=>
+							{
+
+								ly.store.set("LY_MONEY",this.order.actualPay*1)
+								window.location.href="http://www.leyou.com/paysuccess.html";
+							}
+					);
+				}
+			},
+			computed: {
+
+			},
+			components:{
+				shortcut: () => import("/js/pages/shortcut.js")
+			}
+		});
+	</script>
 </body>
 
 </html>

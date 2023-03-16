@@ -15,13 +15,11 @@
 
 	<body>
 		<!--head-->
-		
-		<!--页面顶部白条条，由js动态加载-->
-		<script type="text/javascript" src="plugins/jquery/jquery.min.js"></script>
-		<div class="top"></div>
-    	<script type="text/javascript">$(".top").load("shortcut.html");</script>
-		
-		<div class="cart py-container">
+
+		<div class="cart py-container" id="app">
+			<div class="top">
+				<shortcut />
+			</div>
 			<!--logoArea-->
 			<div class="logoArea">
 				<div class="fl logo"><span class="title">支付页</span></div>
@@ -32,7 +30,7 @@
 					<h3><img src="img/_/right.png" width="48" height="48">　恭喜您，支付成功啦！</h3>
 					<div class="paydetail">
 					<p>支付方式：微信支付</p>
-					<p>支付金额：￥1006.00元</p>
+					<p>支付金额：{{ly.formatPrice(money*1)}}</p>
 					<p class="button"><a href="home-index.html" class="sui-btn btn-xlarge btn-danger">查看订单</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="index.html" class="sui-btn btn-xlarge ">继续购物</a></p>
 				    </div>
 				</div>
@@ -46,7 +44,33 @@
 	<div class="clearfix footer"></div>
 	<script type="text/javascript">$(".footer").load("foot.html");</script>
 	<!--页面底部END-->
-		
+		<script src="./js/vue/vue.js"></script>
+		<script src="./js/axios.min.js"></script>
+		<script src="./js/common.js"></script>
+		<script>
+			var Vm = new Vue({
+				el:"#app",
+				data:{
+					ly,
+					money:0,
+				},
+				created() {
+					this.loadData();
+				},
+				methods: {
+					loadData() {
+						this.money=ly.store.get("LY_MONEY");
+						// ly.store.del("LY_MONEY")
+					},
+				},
+				computed: {
+
+				},
+				components:{
+					shortcut: () => import("/js/pages/shortcut.js")
+				}
+			});
+		</script>
 	
 <script type="text/javascript" src="js/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="js/plugins/jquery.easing/jquery.easing.min.js"></script>

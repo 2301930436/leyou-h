@@ -128,19 +128,19 @@
 						<ul class="send-detail">
 							<li >
 								<div class="sendGoods">
-									<ul class="yui3-g">
+									<ul class="yui3-g" v-for="(commodity,i) in commoditys" :key="i">
 										<li class="yui3-u-1-6">
-											<span><img width="70px" height="70px" src="img/goods.png"/></span>
+											<span><img width="70px" height="70px" :src="commodity.image"/></span>
 										</li>
 										<li class="yui3-u-7-12">
-											<div class="desc">macbook air 2017新款，带bar 顺畅装逼体验</div>
+											<div class="desc">{{commodity.title}}</div>
 											<div class="seven">7天无理由退货</div>
 										</li>
 										<li class="yui3-u-1-12">
-											<div class="price">￥8848.00</div>
+											<div class="price">{{ly.formatPrice(commodity.price)}}</div>
 										</li>
 										<li class="yui3-u-1-12">
-											<div class="num">X1</div>
+											<div class="num">X{{commodity.num}}</div>
 										</li>
 										<li class="yui3-u-1-12">
 											<div class="exit">有货</div>
@@ -172,8 +172,8 @@
 		<div class="order-summary">
 			<div class="static fr">
 				<div class="list">
-					<span><i class="number">1</i>件商品，总商品金额</span>
-					<em class="allprice">¥8848.00</em>
+					<span><i class="number">{{commoditys.length}}</i>件商品，总商品金额</span>
+					<em class="allprice">{{money}}</em>
 				</div>
 				<div class="list">
 					<span>返现：</span>
@@ -186,14 +186,14 @@
 			</div>
 		</div>
 		<div class="clearfix trade">
-			<div class="fc-price">应付金额:　<span class="price">¥8848</span></div>
+			<div class="fc-price">应付金额:　<span class="price">{{money}}</span></div>
 			<div class="fc-receiverInfo">
 				寄送至:{{addresses[selectedAddress].address}}
 				收货人：{{addresses[selectedAddress].name}} {{addresses[selectedAddress].phone}}
 			</div>
 		</div>
 		<div class="submit">
-			<a class="sui-btn btn-danger btn-xlarge" href="pay.html">提交订单</a>
+			<a class="sui-btn btn-danger btn-xlarge" href="javascript:void(0)" @click="sub">提交订单</a>
 		</div>
 	</div>
 
@@ -205,31 +205,70 @@
         var orderInfoVm = new Vue({
             el:"#orderInfoApp",
             data:{
+				ly,
                 addresses:[// 可选地址列表,假数据，需要从后台查询
 					{
-					    name:"锋哥",// 收件人姓名
-						phone:"15800000000",// 电话
-						state:"上海",// 省份
-						city:"上海",// 城市
-						district:"浦东新区",// 区
-						address:"航头镇航头路18号传智播客 3号楼",// 街道地址
-						zipCode:"210000", // 邮编
+					    name:"豪哥",// 收件人姓名
+						phone:"15939581213",// 电话
+						state:"河南",// 省份
+						city:"开封",// 城市
+						district:"龙亭区",// 区
+						address:"商丘学院应用科技学院 14#413",// 街道地址
+						zipCode:"000000", // 邮编
 						default: true
 					},
                     {
-                        name:"张三",// 收件人姓名
-                        phone:"13600000000",// 电话
-                        state:"北京",// 省份
-                        city:"北京",// 城市
-                        district:"朝阳区",// 区
-                        address:"天堂路 3号楼",// 街道地址
-                        zipCode:"100000", // 邮编
+                        name:"菜阿豪",// 收件人姓名
+                        phone:"15939581213",// 电话
+                        state:"河南",// 省份
+                        city:"漯河",// 城市
+                        district:"郾城区",// 区
+                        address:"受降路",// 街道地址
+                        zipCode:"000000", // 邮编
                         default: false
                     }
 				],
 				selectedAddress: 0,
-
+				commoditys:[]
             },
+			created() {
+				this.loadData();
+			},
+			methods: {
+				loadData() {
+
+					this.commoditys = ly.store.get("LY_DINGDAN");
+				},
+				sub(){
+					// TODO 已登录，向后台发起请求
+					ly.http.post("/order",
+							{actualPay:this.money*10,paymentType:2,totalPay:this.money*10, orderDetails:this.commoditys,postFee:0},
+							{
+								transformResponse: [
+									function (c){
+										return c;
+									}
+								]
+							}).then(c=>{
+						ly.store.del("LY_DINGDAN");
+						this.id=c.data;
+						window.location.href = "http://www.leyou.com/pay.html?orderId="+c.data
+						},
+
+
+				)
+
+				}
+			},
+			computed: {
+				money(){
+					var money=0;
+					for (let commodity of this.commoditys) {
+						money+=(commodity.price * commodity.num);
+					}
+					return ly.formatPrice(money)
+				}
+			},
 			components:{
                 shortcut: () => import("/js/pages/shortcut.js")
 			}

@@ -14,11 +14,6 @@
 
 <body>
 
-	<!-- 头部栏位 -->
-	<!--页面顶部，由js动态加载-->
-	<script type="text/javascript" src="plugins/jquery/jquery.min.js"></script>
-	<div id="nav-bottom"></div>
-    <script type="text/javascript">$("#nav-bottom").load("top.html");</script>
 
 <script type="text/javascript" src="js/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript">
@@ -43,6 +38,9 @@ $(function(){
 </body>
     <!--header-->
     <div id="account">
+        <div class="top">
+            <shortcut/>
+        </div>
         <div class="py-container">
             <div class="yui3-g home">
                 <!--左侧列表-->
@@ -51,7 +49,7 @@ $(function(){
                     <div class="person-info">
                         <div class="person-photo"><img src="img/_/photo.png" alt=""></div>
                         <div class="person-account">
-                            <span class="name">Michelle</span>
+                            <span class="name">{{user.username}}</span>
                             <span class="safe"><a href="#">退出登录 </a></span>
                         </div>
                         <div class="clearfix"></div>
@@ -101,15 +99,15 @@ $(function(){
                         </div>
                         <div class="order-detail">
                             <div class="orders">
-                                <div class="choose-order">
-                                    <div class="sui-pagination pagination-large top-pages">
-                                        <ul>
-                                            <li class="prev disabled"><a href="#">上一页</a></li>
+<!--                                <div class="choose-order">-->
+<!--                                    <div class="sui-pagination pagination-large top-pages">-->
+<!--                                        <ul>-->
+<!--                                            <li class="prev disabled"><a href="#">上一页</a></li>-->
 
-                                            <li class="next"><a href="#">下一页</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+<!--                                            <li class="next"><a href="#">下一页</a></li>-->
+<!--                                        </ul>-->
+<!--                                    </div>-->
+<!--                                </div>-->
 
 								<!--order1-->
                                 <div class="choose-title">
@@ -402,7 +400,33 @@ $(function(){
             </div>
         </div>
     </div>
+<script src="./js/vue/vue.js"></script>
+<script src="./js/axios.min.js"></script>
+<script src="./js/common.js"></script>
+<script type="text/javascript">
+    var Vm = new Vue({
+        el: "#account",
+        data: {
+            ly,
+            user:null,
+        },
+        created() {
+            ly.http("/auth/verify")
+                .then(resp => {
+                    this.user = resp.data;
+                })
+        },
+        methods: {
 
+        },
+        computed: {
+
+        },
+        components: {
+            shortcut: () => import("/js/pages/shortcut.js")
+        }
+    })
+</script>
 	<!-- 底部栏位 -->
 	<!--页面底部，由js动态加载-->
 	<div class="clearfix footer"></div>
